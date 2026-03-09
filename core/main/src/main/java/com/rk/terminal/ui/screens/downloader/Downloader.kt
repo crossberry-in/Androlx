@@ -50,7 +50,7 @@ fun Downloader(
             val filesToDownload = listOf(
                 "libtalloc.so.2" to abiMap[abi]!!.talloc,
                 "proot" to abiMap[abi]!!.proot,
-                "alpine.tar.gz" to abiMap[abi]!!.alpine
+                "ubuntu-base.tar.gz" to abiMap[abi]!!.ubuntu
             ).map { (name, url) -> DownloadFile(url, Rootfs.reTerminal.child(name)) }
 
             needsDownload = filesToDownload.any { !it.outputFile.exists() }
@@ -150,18 +150,18 @@ private val abiMap = mapOf(
     "x86_64" to AbiUrls(
         talloc = "https://raw.githubusercontent.com/Xed-Editor/Karbon-PackagesX/main/x86_64/libtalloc.so.2",
         proot = "https://raw.githubusercontent.com/Xed-Editor/Karbon-PackagesX/main/x86_64/proot",
-        alpine = "https://dl-cdn.alpinelinux.org/alpine/v3.21/releases/x86_64/alpine-minirootfs-3.21.0-x86_64.tar.gz"
+        ubuntu = "https://cdimage.ubuntu.com/ubuntu-base/releases/22.04/release/ubuntu-base-22.04-base-amd64.tar.gz"
     ),
     "arm64-v8a" to AbiUrls(
         talloc = "https://raw.githubusercontent.com/Xed-Editor/Karbon-PackagesX/main/aarch64/libtalloc.so.2",
         proot = "https://raw.githubusercontent.com/Xed-Editor/Karbon-PackagesX/main/aarch64/proot",
-        alpine = "https://dl-cdn.alpinelinux.org/alpine/v3.21/releases/aarch64/alpine-minirootfs-3.21.0-aarch64.tar.gz"
+        ubuntu = "https://cdimage.ubuntu.com/ubuntu-base/releases/22.04/release/ubuntu-base-22.04-base-arm64.tar.gz"
     ),
     "armeabi-v7a" to AbiUrls(
         talloc = "https://raw.githubusercontent.com/Xed-Editor/Karbon-PackagesX/main/arm/libtalloc.so.2",
         proot = "https://raw.githubusercontent.com/Xed-Editor/Karbon-PackagesX/main/arm/proot",
-        alpine = "https://dl-cdn.alpinelinux.org/alpine/v3.21/releases/armhf/alpine-minirootfs-3.21.0-armhf.tar.gz"
+        ubuntu = "https://cdimage.ubuntu.com/ubuntu-base/releases/22.04/release/ubuntu-base-22.04-base-armhf.tar.gz"
     )
 )
 
-private data class AbiUrls(val talloc: String, val proot: String, val alpine: String)
+private data class AbiUrls(val talloc: String, val proot: String, val ubuntu: String)
