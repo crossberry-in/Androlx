@@ -192,12 +192,15 @@ afterEvaluate {
     android.applicationVariants.all { variant ->
         variant.javaCompileProvider.dependsOn("downloadPrebuilt")
         
-        // Configure output for Fdroid release to use simplified path
+        // Copy Fdroid release APK to simplified path after build
         if (variant.buildType.name == "release" && variant.productFlavors.any { it.name == "Fdroid" }) {
-            variant.outputs.all { output ->
-                val buildDir = layout.buildDirectory.get().asFile
-                output.outputDirectory.set(File(buildDir, "outputs/apk/android"))
-                output.outputFileName.set("app-release.apk")
+            val copyTask = tasks.register<Copy>("copyFdroidApk") {
+                from(variant.outputs.map { it.outputFile })
+                into(File(layout.buildDirectory.get().asFile, "outputs/apk/android"))
+                rename { "app-release.apk" }
+            }
+            variant.assembleProvider.configure {
+                it.finalizedBy(copyTask)
             }
         }
         true
