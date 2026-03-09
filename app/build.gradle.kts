@@ -77,23 +77,12 @@ android {
             resValue("string","app_name","ReTerminal-Debug")
         }
     }
-    
-    // Fdroid builds use debug signing (no custom keystore required)
-    signingConfigs {
-        create("fdroid") {
-            storeFile = file(layout.buildDirectory.dir("../testkey.keystore"))
-            storePassword = "testkey"
-            keyAlias = "testkey"
-            keyPassword = "testkey"
-        }
-    }
 
     
     defaultConfig {
         applicationId = "com.rk.terminal"
         minSdk = 26
-        //noinspection ExpiredTargetSdkVersion
-        targetSdk = 28
+        targetSdk = 35
 
         //versioning
         versionCode = 8
@@ -103,15 +92,7 @@ android {
         }
     }
 
-    flavorDimensions += "store"
-
-    productFlavors {
-        create("Fdroid") {
-            dimension = "store"
-            targetSdk = 28
-            signingConfig = signingConfigs.getByName("fdroid")
-        }
-    }
+    // No product flavors - simple release build only
     
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -191,18 +172,6 @@ tasks.register("downloadPrebuilt") {
 afterEvaluate {
     android.applicationVariants.all { variant ->
         variant.javaCompileProvider.dependsOn("downloadPrebuilt")
-        
-        // Copy Fdroid release APK to simplified path after build
-        if (variant.buildType.name == "release" && variant.productFlavors.any { it.name == "Fdroid" }) {
-            val copyTask = tasks.register<Copy>("copyFdroidApk") {
-                from(variant.outputs.map { it.outputFile })
-                into(File(layout.buildDirectory.get().asFile, "outputs/apk/android"))
-                rename { "app-release.apk" }
-            }
-            variant.assembleProvider.configure {
-                it.finalizedBy(copyTask)
-            }
-        }
         true
     }
 }
