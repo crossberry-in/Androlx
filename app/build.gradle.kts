@@ -77,6 +77,16 @@ android {
             resValue("string","app_name","ReTerminal-Debug")
         }
     }
+    
+    // Fdroid builds use debug signing (no custom keystore required)
+    signingConfigs {
+        create("fdroid") {
+            storeFile = file(layout.buildDirectory.dir("../testkey.keystore"))
+            storePassword = "testkey"
+            keyAlias = "testkey"
+            keyPassword = "testkey"
+        }
+    }
 
     
     defaultConfig {
@@ -99,11 +109,7 @@ android {
         create("Fdroid") {
             dimension = "store"
             targetSdk = 28
-        }
-
-        create("PlayStore") {
-            dimension = "store"
-            targetSdk = 35
+            signingConfig = signingConfigs.getByName("fdroid")
         }
     }
     
@@ -189,6 +195,13 @@ tasks.register("downloadPrebuilt") {
 afterEvaluate {
     android.applicationVariants.all { variant ->
         variant.javaCompileProvider.dependsOn("downloadPrebuilt")
+        
+        // Configure output for Fdroid release to use simplified path
+        if (variant.buildType.name == "release" && variant.productFlavors.any { it.name == "Fdroid" }) {
+            variant.outputs.all {
+                outputFile.set(File("$buildDir/outputs/apk/android/app-release.apk"))
+            }
+        }
         true
     }
 }
