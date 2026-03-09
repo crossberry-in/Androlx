@@ -123,10 +123,6 @@ android {
         viewBinding = true
         compose = true
     }
-    
-    kotlinOptions {
-        jvmTarget = "17"
-    }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.15"
     }
@@ -198,8 +194,10 @@ afterEvaluate {
         
         // Configure output for Fdroid release to use simplified path
         if (variant.buildType.name == "release" && variant.productFlavors.any { it.name == "Fdroid" }) {
-            variant.outputs.all {
-                outputFile.set(File("$buildDir/outputs/apk/android/app-release.apk"))
+            variant.outputs.all { output ->
+                val buildDir = layout.buildDirectory.get().asFile
+                output.outputDirectory.set(File(buildDir, "outputs/apk/android"))
+                output.outputFileName.set("app-release.apk")
             }
         }
         true
